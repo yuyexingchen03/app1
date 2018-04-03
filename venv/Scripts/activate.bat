@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 @echo off
 set "VIRTUAL_ENV=E:\python\app1\venv"
 
@@ -30,3 +31,37 @@ if defined _OLD_VIRTUAL_PATH (
 set "PATH=%VIRTUAL_ENV%\Scripts;%PATH%"
 
 :END
+=======
+@echo off
+set "VIRTUAL_ENV=E:\PythonProjet\app1\venv"
+
+if not defined PROMPT (
+    set "PROMPT=$P$G"
+)
+
+if defined _OLD_VIRTUAL_PROMPT (
+    set "PROMPT=%_OLD_VIRTUAL_PROMPT%"
+)
+
+if defined _OLD_VIRTUAL_PYTHONHOME (
+    set "PYTHONHOME=%_OLD_VIRTUAL_PYTHONHOME%"
+)
+
+set "_OLD_VIRTUAL_PROMPT=%PROMPT%"
+set "PROMPT=(venv) %PROMPT%"
+
+if defined PYTHONHOME (
+    set "_OLD_VIRTUAL_PYTHONHOME=%PYTHONHOME%"
+    set PYTHONHOME=
+)
+
+if defined _OLD_VIRTUAL_PATH (
+    set "PATH=%_OLD_VIRTUAL_PATH%"
+) else (
+    set "_OLD_VIRTUAL_PATH=%PATH%"
+)
+
+set "PATH=%VIRTUAL_ENV%\Scripts;%PATH%"
+
+:END
+>>>>>>> ce8597445a1969ab4191a5beb3d2a2040f108fa6
