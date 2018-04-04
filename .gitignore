@@ -3,6 +3,8 @@
 /.idea/
 /venv/
 
+*.bak
+*.pyc
 .classpath
 .project
 .settings      
