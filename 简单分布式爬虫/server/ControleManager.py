@@ -4,16 +4,19 @@
 节点管理器
 '''
 from multiprocessing.managers import BaseManager
-
 import time
 
 from multiprocessing import Queue, Process
 
-from 简单分布式爬虫.server.DATAOutput import DataOutPut
+from 简单分布式爬虫.server.DataOutputer import DataOutPut
 from 简单分布式爬虫.server.URLManager import UrlManager
 
 
 class NodeManager(object):
+
+    def __init__(self,url_q,result_q):
+        self.result_q = result_q
+        self.url_q = url_q
 
     def get_url_q(self):
         return self.url_q
@@ -21,9 +24,7 @@ class NodeManager(object):
     def get_result_q(self):
         return self.result_q
 
-    def start_Manager(self,url_q,result_q):
-        self.url_q =url_q
-        self.result_q =result_q
+    def start_Manager(self):
         '''
         创建一个分布式管理器
         :param url_q:  url队列
@@ -37,7 +38,7 @@ class NodeManager(object):
         BaseManager.register('get_task_queue',callable=self.get_url_q)
         BaseManager.register('get_result_queue',callable=self.get_result_q)
         #绑定端口 8002 设置验证口令'baike'.这个相当于对象的初始化
-        manager = BaseManager(address=('127.0.0.1',8002),authkey=b'baike')
+        manager = BaseManager(address=('127.0.0.1',9016),authkey=b'baike')
         #返回manager对象
         return manager
 
@@ -64,13 +65,15 @@ class NodeManager(object):
                     url_manager.save_progress('new_urls.txt',url_manager.new_urls)
                     url_manager.save_progress('old_urls.txt',url_manager.old_urls)
                     return
-                #将从result_solve_proc获取到的url添加到url管理器
-                try:
-                    if not conn_q.empty():
-                        urls = conn_q.get()
-                        url_manager.add_new_urls(urls)
-                except BaseException as e:
-                    time.sleep(0.1)#延时休息
+            #将从result_solve_proc获取到的url添加到url管理器
+            try:
+                # print(conn_q.empty())
+                if not conn_q.empty():
+                    urls = conn_q.get()
+                    # print(urls)
+                    url_manager.add_new_urls(urls)
+            except BaseException as e:
+                time.sleep(0.1)#延时休息
     '''
     数据提取进程从result_queue队列读取返回的数据,并将数据中url添加到conn_q队列交给url管理进程,
     将数据中的文章标题和摘要添加到store_q队列交给数据存储进程
@@ -79,7 +82,7 @@ class NodeManager(object):
         while True:
             try:
                 if not result_q.empty():
-                    content = result_q.get(True)
+                    content = result_q.get()
                     if content['new_urls'] == 'end':
                         #结果分析进程接收到结束通知,结束进程
                         print('结果分析进程接收到通知结束!')
@@ -118,18 +121,20 @@ if __name__ =='__main__':
     store_q =Queue() #是数据提取进程将获取到的数据交给数据存储进程的通道
     conn_q = Queue()#是数据提取进程将新的url数据提交给url管理进程的通道
     #创建分布式管理器
-    node =NodeManager()
-    manager = node.start_Manager(url_q,result_q)
+    node = NodeManager(url_q,result_q)
+    manager = node.start_Manager()
     # 创建URL管理进程 数据提取进程 和数据存储进程
     root_url='https://baike.baidu.com/item/Python/407313'
     #将conn_q中的url和root_url放到url_q中
-    url_manager_proc = Process(target=node.url_manager_proc,args=(url_q,conn_q,root_url))
+    url_manager_proc = Process(target=node.url_manager_proc,args=(url_q,conn_q,root_url),name='p_url_manager_proc')
     # 将result_q中的数据解析到conn_q和store_q中
-    result_solve_proc =Process(target=node.result_solve_proc,args=(result_q,conn_q,store_q))
+    result_solve_proc =Process(target=node.result_solve_proc,args=(result_q,conn_q,store_q),name='p_result_solve_proc')
     #将store_q中的数据保存到文件中
-    store_proc = Process(target=node.store_proc,args=(store_q,))
+    store_proc = Process(target=node.store_proc,args=(store_q,),name='p_store_proc')
     #启动3个进程 和分布式管理器
+
     url_manager_proc.start()
     result_solve_proc.start()
     store_proc.start()
-    manager.start()
+    manager.get_server().serve_forever()
+

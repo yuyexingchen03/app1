@@ -7,13 +7,14 @@ from bs4 import BeautifulSoup
 import  re
 
 class HtmlParser(object):
-    def parser(self,page_url,html_content):
+    def parse(self,page_url,html_content):
         '''
         用于解析网页内容, 抽取url和数据
         :param page_url:
         :param html_content:
         :return:
         '''
+
         if page_url is None or html_content is None:
             return
         soup =BeautifulSoup(html_content,'lxml')
@@ -41,10 +42,17 @@ class HtmlParser(object):
         :return:
         '''
         data = {}
-        data['url'] = page_url
-        title = soup.find('dd', class_='lemmaWgt-lemmaTitle-title').find('h1')
-        data['title'] = title
-        summary = soup.find('div', class_='lemma-summary')
-        # 获取tag中包含的所有文本内容,包括子孙tag中的内容,并将结果最为Unicode字符串返回
-        data['summary'] = summary.get_text()
+        try:
+            data['url'] = page_url
+            title = soup.find('dd', class_='lemmaWgt-lemmaTitle-title').find('h1').get_text()
+            data['title'] = title
+            summary = soup.find('div', class_='lemma-summary')
+            if summary is not None:
+                # 获取tag中包含的所有文本内容,包括子孙tag中的内容,并将结果最为Unicode字符串返回
+                data['summary'] = summary.get_text()
+            else:
+                data['summary'] = 'None'
+        except:
+            return None
+
         return data

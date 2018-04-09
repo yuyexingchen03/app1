@@ -20,7 +20,7 @@ class DataOutPut(object):
         if data is None:
             return
         self.datas.append(data)
-        if len(self.datas)>10:
+        if len(self.datas) > 10:
             self.output_html(self.filepath)
 
     def output_head(self, path):
@@ -37,6 +37,7 @@ class DataOutPut(object):
         fout.write('</title>')
         fout.write('</head>')
         fout.write('<body>')
+        fout.write('<table>')
         fout.close()
 
     def output_html(self, filepath):
@@ -48,8 +49,8 @@ class DataOutPut(object):
         fout = codecs.open(filepath,'a','utf-8')
         for data in self.datas:
             fout.write('<tr>')
-            fout.write('<td>%s</td>'%data['url'])
-            fout.write('<td>%s</td>'%data['title'])
+            fout.write('<td width=\'300px\'>%s</td>'%data['url'])
+            fout.write('<td width=\'200px\'>%s</td>'%data['title'])
             fout.write('<td>%s</td>'%data['summary'])
             fout.write('</tr>')
             self.datas.remove(data)

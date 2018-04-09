@@ -8,7 +8,7 @@ class HtmlDownloader(object):
     def download(self,url):
         if url is None:
             return None
-        headers ={'User-Agent',HtmlDownloader.user_agent}
+        headers ={'User-Agent':HtmlDownloader.user_agent}
         r =requests.get(url,headers =headers)
         if r.status_code ==200:
             r.encoding ='utf-8'
