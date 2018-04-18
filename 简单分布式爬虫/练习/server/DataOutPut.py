@@ -29,15 +29,16 @@ class DataOutputer(object):
             f.write("</body>")
             f.write("</html>")
 
-    def sto_data(self, data):
+    def store_data(self, data):
         if data is None:
             return
         self.datas.append(data)
         if len(self.datas)>10:
             self.output_content()
 
+
     def output_content(self):
-        with codecs.open(self.filePath,'a+',encoding='utf-8') as f:
+        with codecs.open(self.filePath,'a',encoding='utf-8') as f:
           for data in self.datas:
               f.write("<tr>")
               f.write("<td>")
@@ -47,7 +48,10 @@ class DataOutputer(object):
               f.write(data['title'])
               f.write("</td>")
               f.write("<td>")
-              f.write(data['content'])
+              f.write(data['summary'])
               f.write("</td>")
               f.write("</tr>")
+              self.datas.remove(data)
+
+
 

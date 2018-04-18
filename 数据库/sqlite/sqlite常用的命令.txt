@@ -1,0 +1,41 @@
+.schema [table]
+    获取某个table的结构
+
+.tables
+    获取所有的表和视图
+
+.indices [table]
+    获取指定标的索引列表
+
+.output [filename]
+.dump
+.output stdout
+    导出数据库到sql文件
+
+.read [filename]
+    从sql文件中导入数据库
+
+.output [filename,csv]
+.separator ,
+select * from test;
+.output stdout
+    格式化输出数据到csv文件
+
+create table newtable(id integer primary key ,name varchar(20),age integer )
+.import [filename.csv] newtable
+    从csv文件导入数据到表中
+
+sqlite3 test.db .dump >backup.sql
+    备份数据库
+
+sqlite3 test.db <backup.sql
+    回复数据库
+
+
+sqlite3食物
+    BEGIN TRANSACTION :启动事务
+    COmmIT: 提交事务
+    ROLLBACK: 回滚事务
+
+
+
